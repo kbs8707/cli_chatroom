@@ -27,17 +27,19 @@ public class ClientWriteThread extends Thread{
 
             client.setUsername(username);
 
-            
+            //Runs forever to get command console inputs and send it to server
             while(true) {
                 // String msg = console.readLine("[me]: ");
                 String msg = console.readLine();
                 // msg = msg.replace("[me]: ", "");
                 out.println(msg);
-
+                
+                //Thread terminates once the user enters the quit command
                 if (msg.equals("/quit")) {
                     break;
                 }
             }
+            //Exit from the loop means thread termination
             socket.close();
         }
         catch(IOException e) {
