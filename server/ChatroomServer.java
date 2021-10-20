@@ -7,6 +7,7 @@ public class ChatroomServer {
     private int port;
     private Set<String> usernames = new HashSet<>();
     private Set<ChatroomThread> threads = new HashSet<>();
+    private Map<String, ChatroomThread> userMap = new HashMap<>();
 
     public ChatroomServer (int port) {
         this.port = port;
@@ -57,16 +58,18 @@ public class ChatroomServer {
     }
 
     void directMessage(String msg, ChatroomThread source, ChatroomThread dest) {
-        
+        dest.sendMessage(msg);
     }
 
-    void addUser(String username) {
+    void addUser(String username, ChatroomThread source) {
         usernames.add(username);
+        userMap.put(username, source);
     }
 
     void removeUser(String username, ChatroomThread source) {
         usernames.remove(username);
         threads.remove(source);
+        userMap.remove(username);
     }
 
     boolean nameAvailable(String username) {
@@ -75,6 +78,10 @@ public class ChatroomServer {
 
     Set<String> getUserList() {
         return this.usernames;
+    }
+
+    ChatroomThread getThreadByUsername(String username) {
+        return userMap.get(username);
     }
 
 }

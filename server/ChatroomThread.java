@@ -37,7 +37,7 @@ public class ChatroomThread extends Thread {
                         // }
                         System.out.println(username + " has connected");
                         
-                        server.addUser(username);
+                        server.addUser(username, this);
                         server.boradcast(username + " has entered the chat", this);
                         
                         String input;
@@ -78,17 +78,26 @@ public class ChatroomThread extends Thread {
                     }
                 }
                 
-                String commands(String msg, String username) {
-                    if (msg.contains("/")) {
-                        if (msg.equals("/list")) {
+                String commands(String input, String username) {
+                    if (input.contains("/")) {
+                        if (input.equals("/list")) {
                             this.list();
                             return "list";
                         }
-                        else if (msg.equals("/quit")) {
+                        else if (input.equals("/quit")) {
                             server.removeUser(username, this);
                             server.boradcast(username + " has left the chat", this);
                             System.out.println(username + " has disconnected");
                             return "quit";
+                        }
+                        else {
+                            String arr[] = input.split(" ", 2);
+                            String dest = arr[0].substring(1);
+                            if (!server.nameAvailable(dest)) {
+                                String msg = "[" + username + "]: " + arr[1];
+                                server.directMessage(msg, this, server.getThreadByUsername(dest));
+                                return "dm";
+                            }
                         }
                         return null;
                     }
