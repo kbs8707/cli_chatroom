@@ -36,7 +36,7 @@ public class ChatroomServer {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Usage: java ChatroomServer <port number>");
+            System.out.println("Usage: java server.ChatroomServer <port number>");
             System.exit(1);
         }
         

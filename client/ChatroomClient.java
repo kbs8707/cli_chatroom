@@ -27,7 +27,7 @@ public class ChatroomClient {
     public static void main(String[] args) {
         if (args.length != 1) {
             System.err.println(
-            "Usage: java EchoClient <port number>");
+            "Usage: java client.ChatroomClient <port number>");
             System.exit(1);
         }
 
