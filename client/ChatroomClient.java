@@ -15,7 +15,6 @@ public class ChatroomClient {
         try{
             Socket echoSocket = new Socket("localhost", port);
 
-            //Read and write operations are handled separately for every instances of the client
             new ClientReadThread(echoSocket, this).start();
             new ClientWriteThread(echoSocket, this).start();
 
@@ -32,10 +31,8 @@ public class ChatroomClient {
             System.exit(1);
         }
 
-        //Obtain port number from arguments
         int port = Integer.parseInt(args[0]);
 
-        //Create an instance of the client
         ChatroomClient client = new ChatroomClient(port);
         client.run();
     }
