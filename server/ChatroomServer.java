@@ -7,15 +7,11 @@ public class ChatroomServer {
     private int port;
     private Set<String> usernames = new HashSet<>();
     private Set<ChatroomThread> threads = new HashSet<>();
-<<<<<<< HEAD
     private Set<String> rooms = new HashSet<>();
 
     //Associates username with the thread that is created for them
     private Map<String, ChatroomThread> userMap = new HashMap<>();
     private HashMap<String, Set<String>> roomMap = new HashMap<>();
-=======
-    private Map<String, ChatroomThread> userMap = new HashMap<>();
->>>>>>> parent of afa04c3... added comments
 
     public ChatroomServer (int port) {
         this.port = port;
@@ -27,14 +23,8 @@ public class ChatroomServer {
 
             while (true) {
                 Socket client = server.accept();
-<<<<<<< HEAD
-                                
                 //Creates a thread to handle every new client connection
-=======
 
-                // System.out.println("Client IP: "+client.getRemoteSocketAddress().toString()+" has connected");
-
->>>>>>> parent of afa04c3... added comments
                 ChatroomThread thread = new ChatroomThread(client, this);
                 new Thread(thread).start();
                 
@@ -93,7 +83,6 @@ public class ChatroomServer {
         return this.usernames;
     }
 
-<<<<<<< HEAD
     HashMap<String, Set<String>> getRoomMap() {
         return this.roomMap;
     }
@@ -113,8 +102,6 @@ public class ChatroomServer {
     }
     
     //Given username returns the thread associated with it, this enables direct messaging
-=======
->>>>>>> parent of afa04c3... added comments
     ChatroomThread getThreadByUsername(String username) {
         return userMap.get(username);
     }
