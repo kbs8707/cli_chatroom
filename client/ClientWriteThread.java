@@ -29,8 +29,10 @@ public class ClientWriteThread extends Thread{
 
             //Sends to server for the room client wishes to join, or create a new room
             System.out.println("Enter the name of the room you wish to join, or enter a name to create a room");
-            String room = console.readLine();
-            out.println(room);
+            String roomName = console.readLine();
+            out.println(roomName);
+
+            client.setroomName(roomName);
 
             //Runs forever to get command console inputs and send it to server
             while(true) {

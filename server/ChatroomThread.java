@@ -27,20 +27,20 @@ public class ChatroomThread extends Thread {
             
             username = in.readLine();
             System.out.println(username + " has connected");
-
+            
             //Prompts the client to join a room, or create one
             listRoom();
             String roomName = "";
             roomName = in.readLine();
-
-            server.addToRoom(roomName, username);
-
-            server.addUser(username, this);
-            server.boradcast("[System]: " + username + " has entered the chat", this);
+            
+            server.addToRoom(roomName, username, this);
+            
+            // server.addUser(username, this);
+            server.boradcast("[System]: " + username + " has entered the chat", this, roomName, username);
             
             String input;
             while ((input = in.readLine()) != null) {
-                String operation = commands(input, username);
+                String operation = commands(input, username, roomName);
                 if (operation != null) {
                     if (operation.equals("quit")) {
                         break;
@@ -48,7 +48,7 @@ public class ChatroomThread extends Thread {
                 }
                 else {
                     String msg = "[" + username + "]: " + input;
-                    server.boradcast(msg, this);
+                    server.boradcast(msg, this, roomName, username);
                 }
             }
             
@@ -65,6 +65,7 @@ public class ChatroomThread extends Thread {
     }
     
     void list() {
+        out.println("----------------------------------");
         if (server.getUserList().size() != 0) {
             out.println("Current users in chat room");
             for (String user : server.getUserList()) {
@@ -74,9 +75,11 @@ public class ChatroomThread extends Thread {
         else {
             out.println("Chat room is empty");
         }
+        out.println("----------------------------------");
     }
-
+    
     void listRoom() {
+        out.println("----------------------------------");
         if (server.getRoomMap().size() != 0) {
             out.println("Current open rooms");
             for (String room : server.getRoomMap().keySet()) {
@@ -86,26 +89,54 @@ public class ChatroomThread extends Thread {
         else {
             out.println("No open rooms");
         }
+        out.println("----------------------------------");
     }
     
-    String commands(String input, String username) {
+    void roomMemberList(String roomName) {
+        out.println("----------------------------------");
+        if (server.getRoomMap().get(roomName).size() != 0) {
+            out.println("Current users in chat room: " + roomName);
+            for (Map.Entry<String, ChatroomThread> entry : server.getRoomMap().get(roomName).entrySet()) {
+                out.println(entry.getKey());
+            }
+        }
+        else {
+            out.println("Chat room is empty");
+        }
+        out.println("----------------------------------");
+    }   
+
+    void showHelp(){
+        out.println("----------------------------------");
+        out.println("<message> - broadcast message to all users in same room");
+        out.println("/list - displays list of users in current room");
+        out.println("/<username> <message> - message specified user directly");
+        out.println("/quit - exit program");
+        out.println("----------------------------------");
+    }
+    
+    String commands(String input, String username, String roomName) {
         if (input.contains("/")) {
             if (input.equals("/list")) {
-                this.list();
+                this.roomMemberList(roomName);
                 return "list";
             }
             else if (input.equals("/quit")) {
-                server.removeUser(username, this);
-                server.boradcast(username + " has left the chat", this);
+                server.removeUser(username, this, roomName);
+                server.boradcast(username + " has left the chat", this, roomName, username);
                 System.out.println(username + " has disconnected");
                 return "quit";
+            }
+            else if (input.equals("/help")) {
+                this.showHelp();
+                return "help";
             }
             else {
                 String arr[] = input.split(" ", 2);
                 String dest = arr[0].substring(1);
-                if (!server.nameAvailable(dest)) {
+                if (!server.nameAvailable(dest, roomName)) {
                     String msg = "[" + username + "]: " + arr[1];
-                    server.directMessage(msg, this, server.getThreadByUsername(dest));
+                    server.directMessage(msg, this, server.getThreadByUsername(dest, roomName), roomName, dest);
                     return "dm";
                 }
             }

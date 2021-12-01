@@ -5,6 +5,7 @@ import java.net.*;
 
 public class ChatroomClient {
     private String username;
+    private String roomName;
     private int port;
 
     public ChatroomClient(int port) {
@@ -45,5 +46,12 @@ public class ChatroomClient {
         return username;
     }
 
+    void setroomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    String getRoomName() {
+        return roomName;
+    }
 
 }

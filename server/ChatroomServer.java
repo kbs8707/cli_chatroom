@@ -11,7 +11,7 @@ public class ChatroomServer {
 
     //Associates username with the thread that is created for them
     private Map<String, ChatroomThread> userMap = new HashMap<>();
-    private HashMap<String, Set<String>> roomMap = new HashMap<>();
+    private HashMap<String, Map<String, ChatroomThread>> roomMap = new HashMap<>();
 
     public ChatroomServer (int port) {
         this.port = port;
@@ -52,58 +52,55 @@ public class ChatroomServer {
 
     }
 
-    void boradcast(String msg, ChatroomThread source) {
-        for (ChatroomThread user : threads) {
-            if (user != source) {
-                user.sendMessage(msg);
+    void boradcast(String msg, ChatroomThread source, String roomName, String username) {
+        for (Map.Entry<String, ChatroomThread> entry : roomMap.get(roomName).entrySet()) {
+            if (entry.getKey() != username) {
+                entry.getValue().sendMessage(msg);
             }
         }
     }
 
-    void directMessage(String msg, ChatroomThread source, ChatroomThread dest) {
+    void directMessage(String msg, ChatroomThread source, ChatroomThread dest, String roomName, String username) {
         dest.sendMessage(msg);
     }
 
-    void addUser(String username, ChatroomThread source) {
-        usernames.add(username);
-        userMap.put(username, source);
-    }
-
-    void removeUser(String username, ChatroomThread source) {
+    void removeUser(String username, ChatroomThread source, String roomName) {
         usernames.remove(username);
         threads.remove(source);
         userMap.remove(username);
+        roomMap.get(roomName).remove(username);
     }
 
-    boolean nameAvailable(String username) {
-        return !usernames.contains(username);
+    boolean nameAvailable(String username, String roomName) {
+        return !roomMap.get(roomName).containsKey(username);
     }
 
     Set<String> getUserList() {
         return this.usernames;
     }
 
-    HashMap<String, Set<String>> getRoomMap() {
+    HashMap<String, Map<String, ChatroomThread>> getRoomMap() {
         return this.roomMap;
     }
 
-    void addToRoom(String roomName, String username) {
+    void addToRoom(String roomName, String username, ChatroomThread source) {
+        usernames.add(username);
         rooms.add(roomName);
         if (roomMap.containsKey(roomName)) {
-            Set<String> update = roomMap.get(roomName);
-            update.add(username);
+            Map<String, ChatroomThread> update = roomMap.get(roomName);
+            update.put(username, source);
             roomMap.replace(roomName, update);
         }
         else {
-            Set<String> val = new HashSet<>();
-            val.add(username);
+            Map<String, ChatroomThread> val = new HashMap<>();
+            val.put(username, source);
             roomMap.put(roomName, val);
         }
     }
     
     //Given username returns the thread associated with it, this enables direct messaging
-    ChatroomThread getThreadByUsername(String username) {
-        return userMap.get(username);
+    ChatroomThread getThreadByUsername(String username, String roomName) {
+        return roomMap.get(roomName).get(username);
     }
 
 }
