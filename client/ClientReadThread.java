@@ -17,6 +17,7 @@ public class ClientReadThread extends Thread{
         try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             
+            //Polls for communication from the server and display it on the console
             while (true) {
                 String msg = in.readLine();
                 System.out.println(msg);

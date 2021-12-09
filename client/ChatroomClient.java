@@ -16,6 +16,7 @@ public class ChatroomClient {
         try{
             Socket echoSocket = new Socket("localhost", port);
 
+            //Every newly connected client will be allocated a read thread and a write thread
             new ClientReadThread(echoSocket, this).start();
             new ClientWriteThread(echoSocket, this).start();
 
@@ -38,6 +39,8 @@ public class ChatroomClient {
         client.run();
     }
 
+    //Client keeps track of their own username and room name
+    //username and room name are used as parameter when communicating to the server
     void setUsername(String username) {
         this.username = username;
     }

@@ -21,6 +21,7 @@ public class ChatroomThread extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             
+            //Displays a list of connected users in the room, useful for checking for duplicate usernames
             list();
             
             String username = "";
@@ -34,18 +35,22 @@ public class ChatroomThread extends Thread {
             roomName = in.readLine();
             
             server.addToRoom(roomName, username, this);
-            
-            // server.addUser(username, this);
             server.boradcast("[System]: " + username + " has entered the chat", this, roomName, username);
             
             String input;
+
+            //Polls for communications from the client
             while ((input = in.readLine()) != null) {
+                //Scans for client message for function calls
                 String operation = commands(input, username, roomName);
+                
                 if (operation != null) {
+                    //If a quit command is issued, terminates the infinite loop, and closes the socket
                     if (operation.equals("quit")) {
                         break;
                     }
                 }
+                //If the message is not calling for server functions then it must be a broadcast
                 else {
                     String msg = "[" + username + "]: " + input;
                     server.boradcast(msg, this, roomName, username);
@@ -60,10 +65,12 @@ public class ChatroomThread extends Thread {
         
     }
     
+    //Sends message to the client via socket
     void sendMessage(String msg) {
         out.println(msg);
     }
     
+    //Lists all users in server
     void list() {
         out.println("----------------------------------");
         if (server.getUserList().size() != 0) {
@@ -78,6 +85,7 @@ public class ChatroomThread extends Thread {
         out.println("----------------------------------");
     }
     
+    //Lists all users in room
     void listRoom() {
         out.println("----------------------------------");
         if (server.getRoomMap().size() != 0) {
@@ -115,6 +123,7 @@ public class ChatroomThread extends Thread {
         out.println("----------------------------------");
     }
     
+    //All communications from client will be scanned for commands
     String commands(String input, String username, String roomName) {
         if (input.contains("/")) {
             if (input.equals("/list")) {
